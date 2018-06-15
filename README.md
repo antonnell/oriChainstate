@@ -1,5 +1,10 @@
 # Bitcoin core chainstate parser
 
+Full credit goes to the original developer: https://github.com/mycroft/chainstate
+Information on how to contribute to him at the bottom of the page.
+
+
+
 It is based on bitcoin core 0.15.1 client.
 
 The bitcoin core's chainstate stores all blockchain's UTXOs. By parsing it, you can know where bitcoins are, how much are stored on each wallets, etc.
@@ -25,7 +30,7 @@ g++ -o chainstate chainstate.o hex.o varint.o pubkey.o -Lsecp256k1/.libs -lsecp2
 $
 ```
 
-If it doesn't build, you may have additional deps configured in a submodule. You will want to add those deps into the Makefile as well. Or you can also contribute by doing a proper Makefile ;) 
+If it doesn't build, you may have additional deps configured in a submodule. You will want to add those deps into the Makefile as well. Or you can also contribute by doing a proper Makefile ;)
 
 
 # How to run
@@ -64,4 +69,3 @@ Please consider helping me:
 - BTC: 3G734WzCrphZxN7afnrbwunZjV8MBqWUUV
 - BCH: 1MQEd3csWAVRWcgVbqk8CoZYf312VM9vp1
 - LTC: MEQA2uDajDiT3EyH1opRvNwywTDLvskLnq
-
