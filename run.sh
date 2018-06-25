@@ -29,7 +29,7 @@ if test ! -e ${CS_OUT_FILE}; then
 fi
 
 echo "Generating & sorting final balances..."
-cut -d';' -f3,4 cs.out | \
+cut -d';' -f3,4 ${CS_OUT_FILE} | \
     sort | \
     awk -F ';' '{ if ($1 != cur) { if (cur != "") { print cur ";" sum }; sum = 0; cur = $1 }; sum += $2 } END { print cur ";" sum }' | \
     sort -t ';' -k 2 -g -r > ${BALANCES_FILE}
