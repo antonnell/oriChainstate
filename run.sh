@@ -4,7 +4,7 @@ SCRIPT=$(cd $(dirname $0); /bin/pwd)
 COIN=${1:-bitcoin}
 COINDIR=${2:-$COIN}
 RANDOMSTR=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
-BALANCES_FILE=balances-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}
+BALANCES_FILE=balances-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_OUT_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_ERR_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.err
 
@@ -34,16 +34,13 @@ cut -d';' -f3,4 ${CS_OUT_FILE} | \
     awk -F ';' '{ if ($1 != cur) { if (cur != "") { print cur ";" sum }; sum = 0; cur = $1 }; sum += $2 } END { print cur ";" sum }' | \
     sort -t ';' -k 2 -g -r > ${BALANCES_FILE}
 
-echo "Compressing balances"
-gzip ${BALANCES_FILE}
-
 echo "Generated archive:"
-ls -l ${BALANCES_FILE}.gz
+ls -l ${BALANCES_FILE}
 
 echo "Moving state"
 mv /opt/chainstate/${CS_OUT_FILE} /data/${COIN}/
 mv /opt/chainstate/${CS_ERR_FILE} /data/${COIN}/
-mv /opt/chainstate/${BALANCES_FILE}.gz /data/${COIN}/
+mv /opt/chainstate/${BALANCES_FILE} /data/${COIN}/
 
 
 exit 0

@@ -71,10 +71,10 @@ If it doesn't build, you may have additional deps configured in a submodule. You
 You should stop bitcoin's client or daemon before running:
 
 ```
-./run.sh bitcoin /home/user/./bitcoin/
-./run.sh dashcore ~/.dashcore/
-./run.sh litecoin ~/.litecoin/
-./run.sh bitcoin-abc ~/.bitcoin/
+./run.sh bitcoin bitcoin
+./run.sh dashcore dashcore
+./run.sh litecoin litecoin
+./run.sh bitcoin-abc bitcoin
 ```
 
 # Want to thank me ? More feature or more explanations ?
