@@ -38,9 +38,8 @@ echo "Generated archive:"
 ls -l ${BALANCES_FILE}
 
 echo "Moving state"
-mv /opt/chainstate/${CS_OUT_FILE} /data/${COIN}/
-mv /opt/chainstate/${CS_ERR_FILE} /data/${COIN}/
-mv /opt/chainstate/${BALANCES_FILE} /data/${COIN}/
-
+mv /opt/chainstate/${CS_OUT_FILE} /data/${COIN}/incoming/
+mv /opt/chainstate/${CS_ERR_FILE} /data/${COIN}/incoming/
+mv /opt/chainstate/${BALANCES_FILE} /data/${COIN}/incoming/
 
 exit 0
