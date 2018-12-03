@@ -43,7 +43,7 @@ ls -l ${BALANCES_FILE}.gz
 echo "Moving state"
 mv /opt/chainstate/${CS_OUT_FILE} /data/${COIN}/
 mv /opt/chainstate/${CS_ERR_FILE} /data/${COIN}/
-mv /opt/chainstate/${BALANCES_FILE} /data/${COIN}/
+mv /opt/chainstate/${BALANCES_FILE}.gz /data/${COIN}/
 
 
 exit 0
