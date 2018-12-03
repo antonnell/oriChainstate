@@ -12,7 +12,7 @@ echo "Cleaning old state files..."
 rm state/*
 
 echo "Copying chainstate..."
-cp -Rp ~/.${COINDIR}/chainstate state
+cp -Rp ~/.${COINDIR}/chainstate/* state
 
 echo "Syncing..."
 sync
