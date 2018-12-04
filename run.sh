@@ -4,7 +4,7 @@ COIN=${1:-bitcoin}
 COINDIR=${2:-$COIN}
 RANDOMSTR=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 INCOMING_DIRECTORY=/data/${COIN}/incoming/
-ARCHIVE_DIRECTORY=/data/${COUNT}/archive/
+ARCHIVE_DIRECTORY=/data/${COIN}/archive/
 BALANCES_FILE=balances-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_OUT_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_ERR_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.err
@@ -18,10 +18,10 @@ ACC_COPY="\\COPY tmp_${COIN}_accounts (acc_hash, balance) FROM '${INCOMING_DIREC
 ACC_INSERT="INSERT INTO ${COIN}_accounts SELECT * FROM tmp_${COIN}_accounts ON CONFLICT DO NOTHING;"
 
 echo "Cleaning old state files..."
-rm state/*
+rm state/${COIN}/*
 
 echo "Copying chainstate..."
-cp -Rp ~/.${COINDIR}/chainstate/* state
+cp -Rp ~/.${COINDIR}/chainstate/* state/${COIN}
 
 echo "Syncing..."
 sync

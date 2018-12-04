@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         }
     }
 
-    leveldb::Status status = leveldb::DB::Open(options, "state", &db);
+    leveldb::Status status = leveldb::DB::Open(options, "state/"+argv[1], &db);
     assert(status.ok());
 
     // Getting obfuscation key
