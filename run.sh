@@ -7,8 +7,14 @@ INCOMING_DIRECTORY=/data/${COIN}/incoming/
 BALANCES_FILE=${INCOMING_DIRECTORY}balances-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_OUT_FILE=${INCOMING_DIRECTORY}cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_ERR_FILE=${INCOMING_DIRECTORY}cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.err
-COPYUTXOS="\\COPY '${COIN}'_utxo(txn_hash, txn_no, address, amount) FROM '${CS_OUT_FILE}' WITH DELIMITER ';' ON CONFLICT DO UPDATE "
-COPYACCOUNTS="\\COPY '${COIN}'_balances(acc_hash, balance) FROM '${BALANCES_FILE}' WITH DELIMITER ';' ON CONFLICT DO UPDATE"
+UTXO_DROP="DROP TABLE IF EXISTS tmp_${COIN}_utxo"
+UTXO_CREATE="CREATE TABLE tmp_${COIN}_utxo AS SELECT * FROM ${COIN}_utxo WITH NO DATA;"
+UTXO_COPY="\\COPY tmp_${COIN}_utxo (txn_hash, txn_no, address, amount) FROM '${CS_OUT_FILE}' WITH DELIMITER ';';"
+UTXO_INSERT="INSERT INTO ${COIN}_utxo SELECT * FROM tmp_${COIN}_utxo ON CONFLICT DO NOTHING;"
+ACC_DROP="DROP TABLE IF EXISTS tmp_${COIN}_utxo"
+ACC_CREATE="CREATE TABLE tmp_${COIN}_utxo AS SELECT * FROM ${COIN}_utxo WITH NO DATA;"
+ACC_COPY="\\COPY tmp_${COIN}_utxo (txn_hash, txn_no, address, amount) FROM '${BALANCES_FILE}' WITH DELIMITER ';';"
+ACC_INSERT="INSERT INTO ${COIN}_utxo SELECT * FROM tmp_${COIN}_utxo ON CONFLICT DO NOTHING;"
 
 echo "Cleaning old state files..."
 rm state/*
@@ -33,13 +39,12 @@ cut -d';' -f3,4 ${CS_OUT_FILE} | \
     awk -F ';' '{ if ($1 != cur) { if (cur != "") { print cur ";" sum }; sum = 0; cur = $1 }; sum += $2 } END { print cur ";" sum }' | \
     sort -t ';' -k 2 -g -r > ${BALANCES_FILE}
 
-
-source "${BASH_SOURCE%/*}/config.cfg"
+. /opt/chainstate/config.cfg
 
 echo "Importing UTXOs"
-sudo -u postgres $(export PGPASSWORD=${password}; psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${COPYUTXOS}")
+sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${UTXO_DROP}" -c "${UTXO_CREATE}" -c "${UTXO_COPY}" -c "${UTXO_INSERT}"
 
 echo "Importing Accounts"
-sudo -u postgres $(export PGPASSWORD=${password}; psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${COPYACCOUNTS}")
+sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${ACC_DROP}" -c "${ACC_CREATE}" -c "${ACC_COPY}" -c "${ACC_INSERT}"
 
 exit 0
