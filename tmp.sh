@@ -7,6 +7,6 @@ COPYUTXOS="\\COPY '${COIN}'_utxo(txn_hash, txn_no, address, amount) FROM '${CS_O
 source "/opt/chainstate/config.cfg"
 
 echo "Importing UTXOs"
-sudo -u postgres $(export PGPASSWORD=${password}; psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${COPYUTXOS}")
+sudo -u postgres psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${COPYUTXOS}"
 
 exit 0
