@@ -1,6 +1,4 @@
 #!/bin/sh
-source ./config.cfg
-
 SCRIPT=$(cd $(dirname $0); /bin/pwd)
 COIN=${1:-bitcoin}
 COINDIR=${2:-$COIN}
@@ -35,10 +33,13 @@ cut -d';' -f3,4 ${CS_OUT_FILE} | \
     awk -F ';' '{ if ($1 != cur) { if (cur != "") { print cur ";" sum }; sum = 0; cur = $1 }; sum += $2 } END { print cur ";" sum }' | \
     sort -t ';' -k 2 -g -r > ${BALANCES_FILE}
 
+
+source "${BASH_SOURCE%/*}/config.cfg"
+
 echo "Importing UTXOs"
-sudo -u postgres $(psql --host=${host} --port=${port} --username=${username} --password=${password} --dbname=${database} -c "${COPYUTXOS}")
+sudo -u postgres $(export PGPASSWORD=${password}; psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${COPYUTXOS}")
 
 echo "Importing Accounts"
-sudo -u postgres $(psql --host=${host} --port=${port} --username=${username} --password=${password} --dbname=${database} -c "${COPYACCOUNTS}")
+sudo -u postgres $(export PGPASSWORD=${password}; psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${COPYACCOUNTS}")
 
 exit 0
