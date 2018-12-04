@@ -18,10 +18,10 @@ ACC_COPY="\\COPY tmp_${COIN}_accounts (acc_hash, balance) FROM '${INCOMING_DIREC
 ACC_INSERT="INSERT INTO ${COIN}_accounts SELECT * FROM tmp_${COIN}_accounts ON CONFLICT DO NOTHING;"
 
 echo "Cleaning old state files..."
-rm state/${COIN}/*
+rm state/*
 
 echo "Copying chainstate..."
-cp -Rp ~/.${COINDIR}/chainstate/* state/${COIN}
+cp -Rp ~/.${COINDIR}/chainstate/* state
 
 echo "Syncing..."
 sync
