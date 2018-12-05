@@ -2,20 +2,21 @@
 SCRIPT=$(cd $(dirname $0); /bin/pwd)
 COIN=${1:-bitcoin}
 COINDIR=${2:-$COIN}
+TABLE=${3:-$COIN}
 RANDOMSTR=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 INCOMING_DIRECTORY=/data/${COIN}/incoming/
 ARCHIVE_DIRECTORY=/data/${COIN}/archive/
 BALANCES_FILE=balances-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_OUT_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.out
 CS_ERR_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.err
-UTXO_DROP="DROP TABLE IF EXISTS tmp_${COIN}_utxo"
-UTXO_CREATE="CREATE TABLE tmp_${COIN}_utxo AS SELECT * FROM ${COIN}_utxo WITH NO DATA;"
-UTXO_COPY="\\COPY tmp_${COIN}_utxo (txn_hash, txn_no, address, amount) FROM '${INCOMING_DIRECTORY}${CS_OUT_FILE}' WITH DELIMITER ';';"
-UTXO_INSERT="INSERT INTO ${COIN}_utxo SELECT * FROM tmp_${COIN}_utxo ON CONFLICT DO NOTHING;"
-ACC_DROP="DROP TABLE IF EXISTS tmp_${COIN}_accounts"
-ACC_CREATE="CREATE TABLE tmp_${COIN}_accounts AS SELECT * FROM ${COIN}_accounts WITH NO DATA;"
-ACC_COPY="\\COPY tmp_${COIN}_accounts (acc_hash, balance) FROM '${INCOMING_DIRECTORY}${BALANCES_FILE}' WITH DELIMITER ';';"
-ACC_INSERT="INSERT INTO ${COIN}_accounts SELECT * FROM tmp_${COIN}_accounts ON CONFLICT DO NOTHING;"
+UTXO_DROP="DROP TABLE IF EXISTS tmp_${TABLE}_utxo"
+UTXO_CREATE="CREATE TABLE tmp_${TABLE}_utxo AS SELECT * FROM ${TABLE}_utxo WITH NO DATA;"
+UTXO_COPY="\\COPY tmp_${TABLE}_utxo (txn_hash, txn_no, address, amount) FROM '${INCOMING_DIRECTORY}${CS_OUT_FILE}' WITH DELIMITER ';';"
+UTXO_INSERT="INSERT INTO ${TABLE}_utxo SELECT * FROM tmp_${TABLE}_utxo ON CONFLICT DO NOTHING;"
+ACC_DROP="DROP TABLE IF EXISTS tmp_${TABLE}_accounts"
+ACC_CREATE="CREATE TABLE tmp_${TABLE}_accounts AS SELECT * FROM ${TABLE}_accounts WITH NO DATA;"
+ACC_COPY="\\COPY tmp_${TABLE}_accounts (acc_hash, balance) FROM '${INCOMING_DIRECTORY}${BALANCES_FILE}' WITH DELIMITER ';';"
+ACC_INSERT="INSERT INTO ${TABLE}_accounts SELECT * FROM tmp_${TABLE}_accounts ON CONFLICT DO NOTHING;"
 
 echo "Cleaning old state files..."
 rm state/*

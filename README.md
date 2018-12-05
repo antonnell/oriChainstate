@@ -15,6 +15,7 @@ Some code was ripped of the Bitcoin core client, by the way. So, this software i
 Couple of libraries required for chainstate/levevldb
 
 ```
+apt-get update
 apt-get install autoconf libtool libleveldb-dev libssl-dev git build-essential cmake
 ```
 
@@ -24,12 +25,27 @@ You need to get google's leveldb with C++ headers installed, or it won't compile
 ## Installing Level DB
 
 ```
-https://github.com/google/leveldb.git
+export VER="1.20"
+wget https://github.com/google/leveldb/archive/v${VER}.tar.gz
+tar xvf v${VER}.tar.gz
+rm -f v${VER}.tar.gz
 
-mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build
-cd ..
-sudo cp -R include/leveldb /usr/local/include
+cd leveldb-${VER}
+
+make
+scp -r out-static/lib* out-shared/lib* "/usr/local/lib"
+cd include
+scp -r leveldb /usr/local/include
+ldconfig
+```
+
+You need to get PostgreSQL otherwsie you will not be able to copy data to the RDS.
+
+
+## Installing PostgreSQL
+
+```
+apt-get install postgresql postgresql-contrib
 ```
 
 
@@ -52,7 +68,13 @@ mkdir /data/dashcore
 ```
 
 
-# Build
+# Chainstate
+
+## Config
+
+create config.cfg file for postgres connection details
+
+## Build
 
 ```base
 $ git submodule init
@@ -66,7 +88,7 @@ $
 If it doesn't build, you may have additional deps configured in a submodule. You will want to add those deps into the Makefile as well. Or you can also contribute by doing a proper Makefile ;)
 
 
-# How to run
+# Run
 
 You should stop bitcoin's client or daemon before running:
 
