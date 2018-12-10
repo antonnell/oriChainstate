@@ -71,10 +71,10 @@ cut -d';' -f3,4 ${INCOMING_DIRECTORY}${CS_OUT_FILE} | \
 . /opt/chainstate/config.cfg
 
 echo "Importing UTXOs"
-sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${UTXO_DROP}" -c "${UTXO_CREATE}" -c "${UTXO_COPY}" -c "${UTXO_DROP_MAIN}"-c "${UTXO_RENAME}" -c "${UTXO_DROP}"
+sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${UTXO_DROP}" -c "${UTXO_CREATE}" -c "${UTXO_COPY}" -c "${UTXO_DROP_MAIN}" -c "${UTXO_RENAME}" -c "${UTXO_DROP}"
 
 echo "Importing Accounts"
-sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${ACC_DROP}" -c "${ACC_CREATE}" -c "${ACC_COPY}" -c "${ACC_DROP_MAIN}"-c "${ACC_RENAME}" -c "${ACC_DROP}"
+sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${ACC_DROP}" -c "${ACC_CREATE}" -c "${ACC_COPY}" -c "${ACC_DROP_MAIN}" -c "${ACC_RENAME}" -c "${ACC_DROP}"
 
 echo "Moving Files"
 mv ${INCOMING_DIRECTORY}${BALANCES_FILE} ${ARCHIVE_DIRECTORY}${BALANCES_FILE}
