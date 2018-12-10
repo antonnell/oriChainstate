@@ -18,6 +18,29 @@ ACC_CREATE="CREATE TABLE tmp_${TABLE}_accounts AS SELECT * FROM ${TABLE}_account
 ACC_COPY="\\COPY tmp_${TABLE}_accounts (acc_hash, balance) FROM '${INCOMING_DIRECTORY}${BALANCES_FILE}' WITH DELIMITER ';';"
 ACC_INSERT="INSERT INTO ${TABLE}_accounts SELECT * FROM tmp_${TABLE}_accounts ON CONFLICT DO NOTHING;"
 
+echo "Killing blockchain daemon"
+if [ "${COIN}" = "bitcoin" ]
+then
+  bitcoin-cli stop &
+fi
+
+if [ "${COIN}" = "bitcoin-abc" ]
+then
+  bitcoin-cli stop &
+fi
+
+if [ "${COIN}" = "litecoin" ]
+then
+  litecoin-cli stop &
+fi
+
+if [ "${COIN}" = "dashcore" ]
+then
+  dashcore-cli stop &
+fi
+
+wait
+
 echo "Cleaning old state files..."
 rm state/*
 
@@ -53,5 +76,26 @@ echo "Moving Files"
 mv ${INCOMING_DIRECTORY}${BALANCES_FILE} ${ARCHIVE_DIRECTORY}${BALANCES_FILE}
 mv ${INCOMING_DIRECTORY}${CS_OUT_FILE} ${ARCHIVE_DIRECTORY}${CS_OUT_FILE}
 mv ${INCOMING_DIRECTORY}${CS_ERR_FILE} ${ARCHIVE_DIRECTORY}${CS_ERR_FILE}
+
+echo "Killing blockchain daemon"
+if [ "${COIN}" = "bitcoin" ]
+then
+  bitcoind -daemon
+fi
+
+if [ "${COIN}" = "bitcoin-abc" ]
+then
+  bitcoind -daemon
+fi
+
+if [ "${COIN}" = "litecoin" ]
+then
+  litecoind -daemon
+fi
+
+if [ "${COIN}" = "dashcore" ]
+then
+  dashcored -daemon
+fi
 
 exit 0
