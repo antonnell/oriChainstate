@@ -12,10 +12,14 @@ CS_ERR_FILE=cs-${COIN}-$(TZ=UTC date +%Y%m%d-%H%M)-${RANDOMSTR}.err
 UTXO_DROP="DROP TABLE IF EXISTS tmp_${TABLE}_utxo"
 UTXO_CREATE="CREATE TABLE tmp_${TABLE}_utxo AS SELECT * FROM ${TABLE}_utxo WITH NO DATA;"
 UTXO_COPY="\\COPY tmp_${TABLE}_utxo (txn_hash, txn_no, address, amount) FROM '${INCOMING_DIRECTORY}${CS_OUT_FILE}' WITH DELIMITER ';';"
+UTXO_DROP_MAIN="DROP TABLE IF EXISTS ${TABLE}_utxo"
+UTXO_RENAME="ALTER TABLE tmp_${TABLE}_utxo RENAME TO ${TABLE}_utxo"
 UTXO_INSERT="INSERT INTO ${TABLE}_utxo SELECT * FROM tmp_${TABLE}_utxo ON CONFLICT DO NOTHING;"
 ACC_DROP="DROP TABLE IF EXISTS tmp_${TABLE}_accounts"
 ACC_CREATE="CREATE TABLE tmp_${TABLE}_accounts AS SELECT * FROM ${TABLE}_accounts WITH NO DATA;"
 ACC_COPY="\\COPY tmp_${TABLE}_accounts (acc_hash, balance) FROM '${INCOMING_DIRECTORY}${BALANCES_FILE}' WITH DELIMITER ';';"
+ACC_DROP_MAIN="DROP TABLE IF EXISTS ${TABLE}_accounts"
+ACC_RENAME="ALTER TABLE tmp_${TABLE}_accounts RENAME TO ${TABLE}_accounts"
 ACC_INSERT="INSERT INTO ${TABLE}_accounts SELECT * FROM tmp_${TABLE}_accounts ON CONFLICT DO NOTHING;"
 
 echo "Killing blockchain daemon"
@@ -67,10 +71,10 @@ cut -d';' -f3,4 ${INCOMING_DIRECTORY}${CS_OUT_FILE} | \
 . /opt/chainstate/config.cfg
 
 echo "Importing UTXOs"
-sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${UTXO_DROP}" -c "${UTXO_CREATE}" -c "${UTXO_COPY}" -c "${UTXO_INSERT}" -c "${UTXO_DROP}"
+sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${UTXO_DROP}" -c "${UTXO_CREATE}" -c "${UTXO_COPY}" -c "${UTXO_DROP_MAIN}"-c "${UTXO_RENAME}" -c "${UTXO_DROP}"
 
 echo "Importing Accounts"
-sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${ACC_DROP}" -c "${ACC_CREATE}" -c "${ACC_COPY}" -c "${ACC_INSERT}" -c "${ACC_DROP}"
+sudo -u postgres PGPASSWORD=${password} psql --host=${host} --port=${port} --username=${username} --dbname=${database} -c "${ACC_DROP}" -c "${ACC_CREATE}" -c "${ACC_COPY}" -c "${ACC_DROP_MAIN}"-c "${ACC_RENAME}" -c "${ACC_DROP}"
 
 echo "Moving Files"
 mv ${INCOMING_DIRECTORY}${BALANCES_FILE} ${ARCHIVE_DIRECTORY}${BALANCES_FILE}
