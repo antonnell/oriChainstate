@@ -26,17 +26,17 @@ fi
 
 if [ "${COIN}" = "bitcoin-abc" ]
 then
-  bitcoin-cli stop &
+  /opt/bitcoin-abc/bitcoin-abc-0.18.4/bin/bitcoin-cli stop &
 fi
 
 if [ "${COIN}" = "litecoin" ]
 then
-  litecoin-cli stop &
+  /opt/litecoin/litecoin-0.16.3/bin/litecoin-cli stop &
 fi
 
 if [ "${COIN}" = "dashcore" ]
 then
-  dashcore-cli stop &
+  /opt/dashcore/dashcore-0.12.3/bin/dash-cli stop &
 fi
 
 wait
@@ -85,17 +85,17 @@ fi
 
 if [ "${COIN}" = "bitcoin-abc" ]
 then
-  bitcoind -daemon
+  /opt/bitcoin-abc/bitcoin-abc-0.18.4/bin/bitcoind -daemon
 fi
 
 if [ "${COIN}" = "litecoin" ]
 then
-  litecoind -daemon
+  /opt/litecoin/litecoin-0.16.3/bin/litecoind -daemon
 fi
 
 if [ "${COIN}" = "dashcore" ]
 then
-  dashcored -daemon
+  /opt/dashcore/dashcore-0.12.3/bin/dashd -daemon
 fi
 
 exit 0
